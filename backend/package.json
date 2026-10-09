@@ -23,7 +23,8 @@
     "firebase": "^11.9.0",
     "firebase-admin": "^13.4.0",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.14.3"
+    "mongoose": "^8.14.3",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
     "@babel/core": "^7.27.4",
@@ -38,6 +39,7 @@
     "@types/jsonwebtoken": "^9.0.9",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.15.17",
+    "@types/pg": "^8.23.1",
     "@types/supertest": "^6.0.3",
     "babel-jest": "^29.7.0",
     "chai": "^5.2.0",
