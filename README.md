@@ -26,3 +26,21 @@
    ```
 
 1. Check the terminal and open this link [http://localhost:5173/](http://localhost:5173/) on your preferred browser to see the vite demo page.
+
+# Instructions for Docker
+
+1. Make sure you have installed Docker and it is running.
+2. Run the following command from the project folder:
+
+   ```bash
+   docker compose up -d --build
+   ```
+
+3. Open this link [http://localhost:8080/](http://localhost:8080/) on your preferred browser.
+4. To stop it, run:
+
+   ```bash
+   docker compose down
+   ```
+
+To run only the database while developing with `npm run dev`, use `docker compose up -d db`.
