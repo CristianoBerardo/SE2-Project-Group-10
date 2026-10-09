@@ -1,16 +1,24 @@
 import express from "express";
+import { startServer } from "./connections/PostgreSQL/database";
 
 const app = express();
+
 const PORT = Number(process.env.PORT) || 3000;
 
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-if (require.main === module) {
-  app.listen(PORT, () => {
-    console.log(`Backend server is running on port ${PORT}...`);
-  });
-}
+app.listen(PORT, async () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+  await startServer();
+});
+
+
+// if (require.main === module) {
+//   app.listen(PORT, () => {
+//     console.log(`Backend server is running on port ${PORT}...`);
+//   });
+// }
 
 export default app;
