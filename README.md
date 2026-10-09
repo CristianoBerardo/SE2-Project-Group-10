@@ -27,6 +27,52 @@
 
 1. Check the terminal and open this link [http://localhost:5173/](http://localhost:5173/) on your preferred browser to see the vite demo page.
 
+# Instructions for Database Initialization
+
+The application uses PostgreSQL as its database.
+
+Database initialization is handled automatically by Docker Compose through two SQL scripts:
+
+- `seed/init.sql`: Creates the database tables.
+- `seed/seed.sql`: Populates the database with initial data.
+
+## First-time initialization
+
+To initialize the database, run the following command from the project root:
+
+```bash
+docker compose up -d
+```
+
+On the first startup, PostgreSQL automatically executes `init.sql` followed by `seed.sql`.
+
+## Verify database initialization
+
+To verify that the tables have been created successfully, run:
+
+```bash
+docker compose exec db psql -U admin -d admin -c "\dt"
+```
+
+## Reset the database
+
+If you need to recreate the database from scratch, run:
+
+```bash
+docker compose down -v
+docker compose up -d
+```
+
+**Warning:** This operation deletes all data stored in the Docker Compose volumes.
+
+The database will be recreated, and both initialization scripts will run again.
+
+## Access the Database
+
+You can access and manage the PostgreSQL database using Adminer.
+
+Open [http://localhost:8090](http://localhost:8090) on your preferred browser.
+
 # Instructions for Docker
 
 1. Make sure you have installed Docker and it is running.
