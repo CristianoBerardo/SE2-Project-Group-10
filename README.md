@@ -44,3 +44,11 @@
    ```
 
 To run only the database while developing with `npm run dev`, use `docker compose up -d db`.
+
+## Instructions for Docker
+
+To relase the application from the root project folder, run the following command:
+
+```bash
+docker compose up -d --build
+```
