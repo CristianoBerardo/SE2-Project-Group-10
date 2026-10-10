@@ -47,3 +47,50 @@ export async function createTicket(req: Request, res: Response): Promise<void> {
         res.status(500).json({ error: "Internal server error" });
     }
 }
+
+
+export async function getAllTickets(
+    _req: Request,
+    res: Response
+): Promise<void> {
+    try {
+        const result = await pool.query(
+            `SELECT id, code, service_type, status,
+    creation_date, expiration_date
+             FROM ticket
+             ORDER BY creation_date DESC`
+        );
+
+        res.status(200).json(result.rows);
+    } catch (error) {
+        console.error("Error retrieving tickets:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+export async function getTicketById(
+    req: Request,
+    res: Response
+): Promise<void> {
+    try {
+        const { id } = req.params;
+
+        const result = await pool.query(
+            `SELECT id, code, service_type, status,
+    creation_date, expiration_date
+             FROM ticket
+             WHERE id = $1`,
+            [id]
+        );
+
+        if (result.rows.length === 0) {
+            res.status(404).json({ error: "Ticket not found" });
+            return;
+        }
+
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error("Error retrieving ticket:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
