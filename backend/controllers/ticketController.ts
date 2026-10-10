@@ -94,3 +94,85 @@ export async function getTicketById(
         res.status(500).json({ error: "Internal server error" });
     }
 }
+
+
+export async function updateTicket(
+    req: Request,
+    res: Response
+): Promise<void> {
+    try {
+        const { id } = req.params;
+        const { status, expiration_date } = req.body;
+
+        const validStatuses = ["QUEUE", "SERVED", "CANCELLED"];
+
+        if (
+            typeof status !== "string" ||
+            !validStatuses.includes(status)
+        ) {
+            res.status(400).json({ error: "Invalid ticket status" });
+            return;
+        }
+
+        if (
+            expiration_date !== null &&
+            expiration_date !== undefined &&
+            (
+                typeof expiration_date !== "string" ||
+                Number.isNaN(Date.parse(expiration_date))
+            )
+        ) {
+            res.status(400).json({ error: "Invalid expiration_date" });
+            return;
+        }
+
+        const result = await pool.query(
+            `UPDATE ticket
+             SET status = $1,
+    expiration_date = $2
+             WHERE id = $3
+             RETURNING id, code, service_type, status,
+    creation_date, expiration_date`,
+            [status, expiration_date ?? null, id]
+        );
+
+        if (result.rows.length === 0) {
+            res.status(404).json({ error: "Ticket not found" });
+            return;
+        }
+
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error("Error updating ticket:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
+
+
+export async function deleteTicket(
+    req: Request,
+    res: Response
+): Promise<void> {
+    try {
+        const { id } = req.params;
+
+        const result = await pool.query(
+            `UPDATE ticket
+             SET status = $1
+             WHERE id = $2
+             RETURNING id, code, service_type, status,
+    creation_date, expiration_date`,
+            ["CANCELLED", id]
+        );
+
+        if (result.rows.length === 0) {
+            res.status(404).json({ error: "Ticket not found" });
+            return;
+        }
+
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        console.error("Error cancelling ticket:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+}
