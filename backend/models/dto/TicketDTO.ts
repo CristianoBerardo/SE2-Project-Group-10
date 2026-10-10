@@ -14,7 +14,7 @@ export interface CreateTicketDTO {
  */
 export interface UpdateTicketStatusDTO {
     status: string;                     // Status: created
-    expiration_date: Date;              // Date when the ticket expires (null if it has been just created)
+    expiration_date: string;            // Date when the ticket expires (null if it has been just created)
 }
 
 /**
@@ -25,7 +25,7 @@ export interface TicketDTO {
     code: string;                  // Unique code for the ticket (alphanumeric string)
     service_type: string;          // Type of service associated with the ticket
     status: string;                // Current status of the ticket
-    creation_date: Date;           // Date when the ticket was created
-    expiration_date: Date | null;  // Date when the ticket expires (null if it has been just created)
+    creation_date: string;           // Date when the ticket was created
+    expiration_date: string | null;  // Date when the ticket expires (null if it has been just created)
 }
 
