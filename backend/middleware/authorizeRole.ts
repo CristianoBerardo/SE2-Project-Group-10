@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-type UserRole = "ADMIN" | "GUEST";
+type UserRole = "ADMIN" | "OPERATOR" | "TOTEM" | "GUEST";
 
 /**
  * Middleware that restricts access to users with specific roles.

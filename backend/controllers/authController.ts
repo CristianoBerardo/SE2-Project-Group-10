@@ -52,7 +52,11 @@ export async function loginUser(
         const token = jwt.sign({
             role: user.role,
         }, secretKey,
-            { expiresIn: "1h" }
+            {
+                subject: String(user.id),
+                expiresIn: "1h",
+                algorithm: "HS256"
+            }
         );
         res.status(200).json({
             message: "Login successful",
