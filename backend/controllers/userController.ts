@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { pool } from "../connections/PostgreSQL/database";
-import { CreateUserDTO } from "../models/dto/UserDTO";
+import { CreateUserDTO, UpdateUserDTO } from "../models/dto/UserDTO";
 
 /**
  * Creates a new user in the database based on the provided user data.
@@ -102,8 +102,9 @@ export async function updateUser(
 ): Promise<void> {
     try {
         const { username } = req.params;
-        const user_data = req.body;
+        const user_data: UpdateUserDTO = req.body;
 
+        // Validate the username parameter
         if (
             typeof username !== "string" ||
             username.trim().length === 0
@@ -114,6 +115,32 @@ export async function updateUser(
             return;
         }
 
+        // Validate the request body
+        if (
+            !user_data ||
+            typeof user_data !== "object" ||
+            Array.isArray(user_data) ||
+            Object.keys(user_data).length === 0
+        ) {
+            res.status(400).json({
+                error: "Request body must be a non-empty object"
+            });
+            return;
+        }
+
+        // Validate provided fields in the request body
+        const { username: newUsername, password: newPassword, role: newRole } = user_data;
+
+        if (newUsername !== undefined && (typeof newUsername !== "string" || newUsername.trim().length === 0) ||
+            newPassword !== undefined && (typeof newPassword !== "string" || newPassword.trim().length === 0) ||
+            newRole !== undefined && (typeof newRole !== "string" || newRole.trim().length === 0)) {
+            res.status(400).json({
+                error: "Invalid fields in request body. Username, password, and role must be non-empty strings if provided."
+            });
+            return;
+        }
+
+        // Check if the username exists in the database
         if (!await usernameExists(username.trim())) {
             res.status(409).json({
                 error: "Username does not exist"
@@ -121,30 +148,24 @@ export async function updateUser(
             return;
         }
 
-        if (
-            req.body === undefined
-        ) {
-            res.status(400).json({
-                error: "Body is required"
-            });
-            return;
-        }
-
-        if (await usernameExists(user_data.username.trim())) {
+        // Check if the new username already exists in the database (if provided)
+        if (newUsername !== undefined && newUsername !== username &&  await usernameExists(newUsername.trim())) {
             res.status(409).json({
-                error: `Username ${user_data.username} already exists`
+                error: `Username ${newUsername} already exists`
             });
             return;
         }
 
+        // Update the user in the database
         const result = await pool.query(
             `UPDATE "user"
              SET username = COALESCE($1, username), password = COALESCE($2, password), role = COALESCE($3, role)
              WHERE username = $4
              RETURNING id, username, role`,
-            [user_data.username.trim(), user_data.password.trim(), user_data.role.trim(), username.trim()]
+            [newUsername?.trim() ?? null, newPassword?.trim() ?? null, newRole?.trim() ?? null, username.trim()]
         );
 
+        // Check update result and respond accordingly
         if (result.rows.length === 0) {
             res.status(404).json({
                 error: "User not found"

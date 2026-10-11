@@ -25,3 +25,15 @@ export interface CreateUserDTO {
     password: string;       // Password for the user
     role?: string;          // Optional role of the user, defaults to "GUEST"
 }
+
+
+/**
+ * DTO FOR USER UPDATE
+ * All fields are optional, allowing for partial updates. Password is not included in the response
+ * for security reasons.
+ */
+export interface UpdateUserDTO {
+    username?: string;      // Optional new username for the user
+    password?: string;      // Optional new password for the user
+    role?: string;          // Optional new role of the user
+}
