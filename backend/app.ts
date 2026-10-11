@@ -1,4 +1,5 @@
 import express from "express";
+import { startServer } from "./connections/PostgreSQL/database";
 import ticketRoutes from "./routes/ticketRoutes";
 
 const app = express();
@@ -19,8 +20,9 @@ app.get("/api/health", (_req, res) => {
 
 
 if (require.main === module) {
-  app.listen(PORT, () => {
+  app.listen(PORT, async () => {
     console.log(`Backend server is running on port ${PORT}...`);
+    await startServer();
   });
 }
 
