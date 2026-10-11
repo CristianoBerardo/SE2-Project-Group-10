@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS "ticket" (
     expiration_date TIMESTAMPTZ NULL
 );
 
+CREATE SEQUENCE IF NOT EXISTS ticket_code_seq START WITH 9;
+
 CREATE TABLE IF NOT EXISTS "user" (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username TEXT NOT NULL UNIQUE,

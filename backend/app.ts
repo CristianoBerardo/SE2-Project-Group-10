@@ -1,7 +1,11 @@
 import express from "express";
 import { startServer } from "./connections/PostgreSQL/database";
+import ticketRoutes from "./routes/ticketRoutes";
 
 const app = express();
+
+app.use(express.json());
+app.use("/api/tickets", ticketRoutes);
 
 const PORT = Number(process.env.PORT) || 3000;
 
