@@ -1,22 +1,47 @@
-import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { loginUser } from "../api/authApi";
 
 import "../App.css";
 import Navbar from "../components/Navbar";
 
 function Login() {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const from =(location.state as { from?: string } | null)?.from ?? "/";
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
-    async function handleLogin(event: FormEvent<HTMLFormElement>) {
+    async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        setError("");
         setLoading(true);
+        setError("");
+
+        try {
+            const response = await loginUser({
+                username,
+                password
+            });
+
+            // Save JWT for subsequent API requests
+            sessionStorage.setItem("jwt_token", response.token);
+
+            navigate(from, { replace: true });
+
+        } catch (err) {
+            setError(
+                err instanceof Error
+                    ? err.message
+                    : "Login failed"
+            );
+        } finally {
+            setLoading(false);
+        }
     }
 
     return (
@@ -65,7 +90,6 @@ function Login() {
                             type="submit"
                             className="nav-button login-button"
                             disabled={loading}
-                            onClick={() => navigate("/get-ticket")}
                         >
                             {loading ? "Logging in..." : "Login"}
                         </button>

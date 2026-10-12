@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 import { startServer } from "./connections/PostgreSQL/database";
 import authRoutes from "./routes/authRoutes";
+import statsRoutes from "./routes/statsRoutes";
 import ticketRoutes from "./routes/ticketRoutes";
 import userRoutes from "./routes/userRoutes";
 
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use("/api/tickets", ticketRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/stats", statsRoutes);
 
 const PORT = Number(process.env.PORT) || 3000;
 
