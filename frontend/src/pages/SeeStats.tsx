@@ -142,21 +142,21 @@ function Stats() {
                             <tbody>
                                 {loading ? (
                                     <tr>
-                                        <td colSpan={4}>
+                                        <td colSpan={5}>
                                             Loading statistics...
                                         </td>
                                     </tr>
 
                                 ) : error ? (
                                     <tr>
-                                        <td colSpan={4} role="alert">
+                                        <td colSpan={5} role="alert">
                                             {error}
                                         </td>
                                     </tr>
 
                                 ) : stats.length === 0 ? (
                                     <tr>
-                                        <td colSpan={4}>
+                                            <td colSpan={5}>
                                             No statistics available.
                                         </td>
                                     </tr>
