@@ -615,7 +615,7 @@ p {
   border-collapse: collapse;
 
   background: var(--background);
-  text-align: left;
+  text-align: center;
 }
 
 .stats-table thead {

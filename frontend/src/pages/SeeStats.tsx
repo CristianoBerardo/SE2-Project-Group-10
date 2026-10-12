@@ -133,7 +133,8 @@ function Stats() {
                                 <tr>
                                     <th>Date</th>
                                     <th>Service Type</th>
-                                    <th>Ticket Nr</th>
+                                    <th>Tickets Created</th>
+                                    <th>Tickets Served</th>
                                     <th>Avg Elapsed Time</th>
                                 </tr>
                             </thead>
@@ -173,7 +174,11 @@ function Stats() {
                                             </td>
 
                                             <td>
-                                                {stat.ticket_nr}
+                                                {stat.ticket_created}
+                                            </td>
+
+                                            <td>
+                                                {stat.ticket_served}
                                             </td>
 
                                             <td>

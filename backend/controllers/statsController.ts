@@ -30,7 +30,11 @@ export async function getStats(
             SELECT
                 service_type,
 
-                COUNT(*)::int AS ticket_nr,
+                COUNT(*)::int AS ticket_created,
+
+                COUNT(*)FILTER (
+                    WHERE expiration_date IS NOT NULL
+                )::int AS ticket_served,
 
                 ROUND(
                     AVG(
