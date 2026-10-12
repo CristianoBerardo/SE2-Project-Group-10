@@ -15,14 +15,28 @@ export async function getStats(
     aggregation: AggregationType
 ): Promise<StatsDTO[]> {
 
+    const token = sessionStorage.getItem("jwt_token");
+
+    if (!token) {
+        throw new Error("You must log in to view statistics");
+    }
+
     const response = await fetch(`${API_BASE_URL}?aggregation=${aggregation}`, {
         method: "GET",
         headers: {
-            "Content-Type": "application/json"
-        },
+            Authorization: `Bearer ${token}`
+        }
     });
 
-     if (!response.ok) {
+    if (response.status === 401) {
+        throw new Error("Session expired. Please log in again.");
+    }
+
+    if (response.status === 403) {
+        throw new Error("You do not have permission to view statistics.");
+    }
+
+    if (!response.ok) {
         throw new Error(`Failed to load statistics (${response.status})`);
     }
 
