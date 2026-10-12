@@ -11,7 +11,7 @@ const queryMock = pool.query as unknown as jest.Mock;
 
 const fakeTicket = {
     id: "3b241101-e2bb-4255-8caf-4136c566a962",
-    code: "A009",
+    code: "D001",
     service_type: "Technical assistance",
     status: "QUEUE",
     creation_date: "2026-10-12T08:00:00.000Z",
@@ -20,18 +20,18 @@ const fakeTicket = {
 
 describe("POST /api/tickets (Get a ticket)", () => {
     beforeEach(() => {
-        queryMock.mockReset(); //per resettare il nostro database fake
-        jest.spyOn(console, "error").mockImplementation(() => { }); //disattiva i console error
+        queryMock.mockReset(); // per resettare il nostro database fake
+        jest.spyOn(console, "error").mockImplementation(() => { }); // disattiva i console error
     });
 
     afterEach(() => {
         jest.restoreAllMocks();
     });
 
-    it("create a ticket and reply 201", async () => {
+    it("creates first ticket of the day with code D001 and replies 201", async () => {
         queryMock
-            .mockResolvedValueOnce({ rows: [{ number: "9" }] }) //prima viene eseguita una query in cui viene richiesto il prossimo numero disponibile
-            .mockResolvedValueOnce({ rows: [fakeTicket] }); //poi viene eseguito l'insert del ticket
+            .mockResolvedValueOnce({ rows: [] }) // nessun ticket creato oggi per questo servizio
+            .mockResolvedValueOnce({ rows: [fakeTicket] }); // insert del ticket
 
         const res = await request(app)
             .post("/api/tickets")
@@ -41,41 +41,55 @@ describe("POST /api/tickets (Get a ticket)", () => {
         expect(res.body).toEqual(fakeTicket);
         expect(res.body.status).toBe("QUEUE");
         expect(res.body.expiration_date).toBeNull();
-    });
-
-    it("a code with prefix A and zeros is generated", async () => {
-        queryMock
-            .mockResolvedValueOnce({ rows: [{ number: "9" }] })
-            .mockResolvedValueOnce({ rows: [fakeTicket] });
-
-        await request(app)
-            .post("/api/tickets")
-            .send({ service_type: "Technical assistance" });
-
-        //la seconda query è l'insert con parametri = [code, service_type, status]
         expect(queryMock.mock.calls[1][1]).toEqual([
-            "A009",
+            "D001",
             "Technical assistance",
             "QUEUE",
         ]);
     });
 
-    it("does not truncate codes with more than 3 digits", async () => {
+    it("generates progressive code incrementing previous ticket number", async () => {
         queryMock
-            .mockResolvedValueOnce({ rows: [{ number: "1000" }] })
-            .mockResolvedValueOnce({ rows: [fakeTicket] });
+            .mockResolvedValueOnce({ rows: [{ code: "D009" }] }) // ultimo ticket di oggi era D009
+            .mockResolvedValueOnce({ rows: [{ ...fakeTicket, code: "D010" }] });
+
+        const res = await request(app)
+            .post("/api/tickets")
+            .send({ service_type: "Technical assistance" });
+
+        expect(res.status).toBe(201);
+        expect(queryMock.mock.calls[1][1][0]).toBe("D010");
+    });
+
+    it("uses service-specific prefix (e.g. B for Billing support)", async () => {
+        queryMock
+            .mockResolvedValueOnce({ rows: [] })
+            .mockResolvedValueOnce({ rows: [{ ...fakeTicket, code: "B001", service_type: "Billing support" }] });
 
         await request(app)
             .post("/api/tickets")
             .send({ service_type: "Billing support" });
 
-        expect(queryMock.mock.calls[1][1][0]).toBe("A1000");
+        expect(queryMock.mock.calls[1][1][0]).toBe("B001");
+        expect(queryMock.mock.calls[1][1][1]).toBe("Billing support");
+    });
+
+    it("restarts at 0 when max ticket number (999) is reached", async () => {
+        queryMock
+            .mockResolvedValueOnce({ rows: [{ code: "B999" }] })
+            .mockResolvedValueOnce({ rows: [{ ...fakeTicket, code: "B000", service_type: "Billing support" }] });
+
+        await request(app)
+            .post("/api/tickets")
+            .send({ service_type: "Billing support" });
+
+        expect(queryMock.mock.calls[1][1][0]).toBe("B000");
     });
 
     it("remove spaces from service_type before saving", async () => {
         queryMock
-            .mockResolvedValueOnce({ rows: [{ number: "2" }] })
-            .mockResolvedValueOnce({ rows: [fakeTicket] });
+            .mockResolvedValueOnce({ rows: [] })
+            .mockResolvedValueOnce({ rows: [{ ...fakeTicket, code: "B001", service_type: "Billing support" }] });
 
         await request(app)
             .post("/api/tickets")
@@ -121,7 +135,7 @@ describe("GET /api/tickets/:id", () => {
         const res = await request(app).get(`/api/tickets/${fakeTicket.id}`);
 
         expect(res.status).toBe(200);
-        expect(res.body.code).toBe("A009");
+        expect(res.body.code).toBe("D001");
     });
 
     it("responds 404 if it does not exist", async () => {
