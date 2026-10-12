@@ -17,16 +17,17 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-app.listen(PORT, async () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-  await startServer();
-});
+//app.listen(PORT, async () => {
+//  console.log(`Server is running on http://localhost:${PORT}`);
+//  await startServer();
+//});
 
 
-// if (require.main === module) {
-//   app.listen(PORT, () => {
-//     console.log(`Backend server is running on port ${PORT}...`);
-//   });
-// }
+if (require.main === module) {
+  app.listen(PORT, async () => {
+    console.log(`Backend server is running on port ${PORT}...`);
+    await startServer();
+  });
+}
 
 export default app;
