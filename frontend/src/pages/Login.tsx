@@ -30,6 +30,8 @@ function Login() {
 
             // Save JWT for subsequent API requests
             sessionStorage.setItem("jwt_token", response.token);
+            sessionStorage.setItem("username", response.user.username);
+            sessionStorage.setItem("role", response.user.role);
 
             navigate(from, { replace: true });
 

@@ -199,11 +199,12 @@ p {
 
 /* Smaller navigation button */
 
-.navbar .nav-button {
+.navbar {
   width: auto;
   min-height: 45px;
 
   padding: 10px 20px;
+  justify-content: space-between;
 
   font-size: 16px;
   font-weight: 500;
@@ -212,6 +213,44 @@ p {
   border-radius: 8px;
 }
 
+.navbar-home-button,
+.navbar-auth-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 45px;
+  padding: 10px 20px;
+
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 600;
+
+  color: var(--accent);
+  background: var(--background);
+
+  border: 2px solid transparent;
+  border-radius: 8px;
+
+  text-decoration: none;
+  cursor: pointer;
+
+  transition:
+    border-color 0.3s,
+    transform 0.2s;
+}
+
+.navbar-home-button:hover,
+.navbar-auth-button:hover {
+  border-color: var(--accent-border);
+  transform: translateY(-2px);
+}
+
+.navbar-home-button:focus-visible,
+.navbar-auth-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
 /* ==========================================
    SECONDARY PAGES
    GET TICKET / STATS

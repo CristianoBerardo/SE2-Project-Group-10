@@ -14,9 +14,6 @@ function Home() {
                     <button onClick={() => navigate("/get-ticket")} className="nav-button">
                         Go to Get Ticket Page
                     </button>
-                    <button onClick={() => navigate("/login")} className="nav-button">
-                        Go to Login Page
-                    </button>
                     <button onClick={() => navigate("/see-stats")} className="nav-button">
                         Go to See Stats Page
                     </button>
