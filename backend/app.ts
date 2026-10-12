@@ -1,13 +1,38 @@
+import cors from "cors";
 import express from "express";
 import { startServer } from "./connections/PostgreSQL/database";
+import authRoutes from "./routes/authRoutes";
+import statsRoutes from "./routes/statsRoutes";
+import ticketRoutes from "./routes/ticketRoutes";
+import userRoutes from "./routes/userRoutes";
 
 const app = express();
+app.use(cors({
+  origin: "http://localhost:5173",
+}));
+app.use(express.json());
+app.use("/api/tickets", ticketRoutes);
+app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/stats", statsRoutes);
 
-const port = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
-app.listen(async () => {
-  console.log(`Serveraksbcciadvbuds is running on http://localhost:${port}`);
-  await startServer();
+app.get("/api/health", (_req, res) => {
+  res.json({ status: "ok" });
 });
+
+//app.listen(PORT, async () => {
+//  console.log(`Server is running on http://localhost:${PORT}`);
+//  await startServer();
+//});
+
+
+if (require.main === module) {
+  app.listen(PORT, async () => {
+    console.log(`Backend server is running on port ${PORT}...`);
+    await startServer();
+  });
+}
 
 export default app;
